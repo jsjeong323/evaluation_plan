@@ -90,7 +90,28 @@ th, td {
     transition: background-color 0.2s ease-in-out;
 }
 
-td:focus-within {
+/* '내 점수' 입력 칸을 클릭했을 때, 그 칸(td)의 배경색을 변경 */
+td:has(.score-input:focus) {
+    background-color: var(--focus-bg-color);
+}
+
+/* --- 수행평가 PDF 링크 셀 스타일 수정 --- */
+
+.pdf-link-cell a {
+    color: inherit;             /* 글자색을 주변과 동일하게 설정 */
+    text-decoration: none;      /* 평소에는 밑줄 없음 */
+    display: block;
+    margin: -12px;
+    padding: 12px;
+}
+
+/* 링크에 마우스를 올렸을 때(hover) 밑줄만 표시 */
+.pdf-link-cell a:hover {
+    text-decoration: underline;
+}
+
+/* 링크를 클릭하는 순간(:active)에만 셀 배경색을 변경 */
+.pdf-link-cell:active {
     background-color: var(--focus-bg-color);
 }
 
