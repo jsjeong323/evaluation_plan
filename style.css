@@ -74,10 +74,27 @@ main {
     display: block;
 }
 
-table {
-    width: 70%;
-    border-collapse: collapse;
-    margin-top: 20px auto;
+.score-input {
+    width: 100%; /* 칸의 너비를 꽉 채웁니다 */
+    padding: 5px;
+    border: none; /* 테두리를 제거합니다 */
+    background-color: transparent; /* 배경색을 투명하게 만듭니다 */
+    text-align: center; /* 텍스트를 중앙 정렬합니다 */
+    font-size: inherit; /* 주변 텍스트와 글자 크기를 맞춥니다 */
+    -moz-appearance: textfield; /* Firefox에서 화살표 제거 */
+}
+
+/* Chrome, Safari, Edge 등 Webkit 기반 브라우저에서 화살표 제거 */
+.score-input::-webkit-outer-spin-button,
+.score-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 입력 칸을 클릭했을 때 파란색 테두리로 활성화 표시 */
+.score-input:focus {
+    outline: 2px solid var(--primary-color);
+    border-radius: 3px;
 }
 
 th, td {
