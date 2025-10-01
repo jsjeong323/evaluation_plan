@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', function () {
             name: "지구과학",
             performancePdf: "pdfs/지구과학_수행평가기준.pdf",
             items: [
-                { type: "지필", area: "1회고사(중간고사)", max: 100, ratio: 30, period: "9월 5주" },
-                { type: "지필", area: "2회고사(기말고사)", max: 100, ratio: 30, period: "12월 2주" },
+                { type: "지필", area: "1회고사", max: 100, ratio: 30, period: "9월 5주" },
+                { type: "지필", area: "2회고사", max: 100, ratio: 30, period: "12월 2주" },
                 { type: "수행", area: "창의적 문제 해결", max: 15, ratio: 15, period: "8월 4주" },
                 { type: "수행", area: "징검다리 탐구", max: 25, ratio: 25, period: "10월 3주" },
             ]
