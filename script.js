@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. 각 과목별 평가 계획 데이터 정의
+    // 1. 모든 과목의 평가 계획 데이터 정의
     const evaluationData = {
         "common-korean-2": {
             name: "공통국어2",
@@ -103,18 +103,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    // 2. HTML 요소 가져오기
     const subjectTabs = document.getElementById('subject-tabs');
     const subjectContent = document.getElementById('subject-content');
 
-    // 3. 로컬 스토리지에서 저장된 점수 불러오기
     let scores = JSON.parse(localStorage.getItem('evaluationScores')) || {};
 
-    // 4. 데이터 기반으로 HTML 동적 생성
     Object.keys(evaluationData).forEach((key, index) => {
         const subject = evaluationData[key];
         
-        // 4-1. 과목 탭 생성
         const tabItem = document.createElement('li');
         const tabLink = document.createElement('a');
         tabLink.href = `#${key}`;
@@ -124,16 +120,13 @@ document.addEventListener('DOMContentLoaded', function () {
         tabItem.appendChild(tabLink);
         subjectTabs.appendChild(tabItem);
         
-        // 4-2. 과목별 평가 표가 담길 div 생성
         const pane = document.createElement('div');
         pane.id = key;
         pane.classList.add('subject-pane');
         if (index === 0) pane.classList.add('active');
         
-        // 4-3. 반영비율 합계 계산
         const totalRatio = subject.items.reduce((sum, item) => sum + item.ratio, 0);
 
-        // 4-4. 테이블 HTML 구조 생성
         const table = `
             <table>
                 <thead>
@@ -162,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <td>${item.ratio}</td>
                                 <td><input type="number" class="score-input" data-subject="${key}" data-itemindex="${itemIndex}" min="0" max="${item.max}"></td>
                                 <td>${item.period}</td>
-                                <td></td>
+                                <td id="status-${key}-${itemIndex}"></td> 
                             </tr>
                         `;
                     }).join('')}
@@ -182,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function () {
         subjectContent.appendChild(pane);
     });
     
-    // 5. 탭 클릭 시 해당 내용 보여주는 이벤트 리스너
     subjectTabs.addEventListener('click', (e) => {
         if (e.target.tagName === 'A') {
             e.preventDefault();
@@ -194,56 +186,60 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // 6. 점수 계산 및 로컬 스토리지에 저장하는 함수
-    function calculateAndSave(subjectKey) {
+    function updateAndSave(subjectKey) {
         const subject = evaluationData[subjectKey];
-        let total = 0;
+        let totalScore = 0;
         
         if (!scores[subjectKey]) {
             scores[subjectKey] = new Array(subject.items.length).fill(null);
         }
 
         subject.items.forEach((item, index) => {
-            const input = document.querySelector(`input[data-subject="${subjectKey}"][data-itemindex="${index}"]`);
-            const score = parseFloat(input.value);
+            const scoreInput = document.querySelector(`input.score-input[data-subject="${subjectKey}"][data-itemindex="${index}"]`);
+            const statusCell = document.getElementById(`status-${subjectKey}-${index}`);
+            
+            const scoreValue = scoreInput.value;
+            const score = parseFloat(scoreValue);
+            
+            if (scoreValue.trim() !== '') {
+                statusCell.textContent = 'O';
+            } else {
+                statusCell.textContent = 'X';
+            }
 
             if (!isNaN(score)) {
-                total += (score / item.max) * item.ratio;
+                totalScore += (score / item.max) * item.ratio;
                 scores[subjectKey][index] = score;
             } else {
                 scores[subjectKey][index] = null;
             }
         });
 
-        document.getElementById(`total-score-${subjectKey}`).textContent = total.toFixed(2);
+        document.getElementById(`total-score-${subjectKey}`).textContent = totalScore.toFixed(2);
         localStorage.setItem('evaluationScores', JSON.stringify(scores));
     }
 
-    // 7. 모든 점수 입력 칸에 이벤트 리스너 추가
     document.querySelectorAll('.score-input').forEach(input => {
         input.addEventListener('input', () => {
-            calculateAndSave(input.dataset.subject);
+            updateAndSave(input.dataset.subject);
         });
     });
     
-    // 8. 페이지 로드 시 저장된 점수 불러와서 채우고 계산하는 함수
-    function loadScoresAndCalculate() {
+    function loadUserData() {
         Object.keys(evaluationData).forEach(subjectKey => {
             if (scores[subjectKey]) {
                 scores[subjectKey].forEach((score, index) => {
                     if (score !== null) {
-                        const input = document.querySelector(`input[data-subject="${subjectKey}"][data-itemindex="${index}"]`);
-                        if(input) {
-                           input.value = score;
+                        const scoreInput = document.querySelector(`input.score-input[data-subject="${subjectKey}"][data-itemindex="${index}"]`);
+                        if(scoreInput) {
+                           scoreInput.value = score;
                         }
                     }
                 });
             }
-            // 불러온 점수로 각 과목의 합계를 다시 계산
-            calculateAndSave(subjectKey); 
+            updateAndSave(subjectKey); 
         });
     }
 
-    // 9. 페이지가 열릴 때 함수 실행
-    loadScoresAndCalculate();
+    loadUserData();
 });
