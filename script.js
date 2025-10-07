@@ -1,4 +1,3 @@
-// script.js (완전 교체본)
 document.addEventListener('DOMContentLoaded', () => {
   /* 1) 데이터 정의 (기존과 동일) */
   const evaluationData = {
